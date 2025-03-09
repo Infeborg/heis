@@ -1,9 +1,8 @@
 #pragma once
+#include <stdlib.h>
+#include <stdbool.h>
 
-typedef struct {
-    bool open; // invert to close
-    bool obstruction;
-} door;
+void wait_for_close(void);
+void open_door(void);
+void close_door(void);
 
-void open_door();
-void wait_for_close();
