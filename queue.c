@@ -3,7 +3,7 @@ typedef struct {
 } queue;
 
 void enqueue(){
-
+    
 }
 
 void dequeue() {
