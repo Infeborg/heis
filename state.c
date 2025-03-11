@@ -15,6 +15,7 @@ DIRN_UP = 1
 // Går til en etasje om den ikke er på en
 void state_init() {
     elevio_motorDirection(DIRN_UP);
+    printf("initfunc\n");
     while (1) {
         if (elevio_floorSensor() != -1) {
             elevio_motorDirection(DIRN_STOP);
