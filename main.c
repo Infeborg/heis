@@ -9,12 +9,13 @@ int main() {
     
     printf("i gang\n");
 
-    // elevio_init();
+    elevio_init();
     state_init();
 
     printf("=== Heis! ===\n");
     printf("Trykk stop for å stoppe!\n");
 
+    //elevio_motorDirection(DIRN_UP);
     state_machine();
     /*
 

@@ -25,6 +25,7 @@ void update_queue() {
 
 // True om noe skal gjøres, false om ikke
 bool find_order() {
+
     // Oppdaterer up & down
     check_cab_floor();
    
@@ -53,26 +54,36 @@ void execute_order() {
                 int destination_floor = floor;
                 int dir = fix_dir(button, floor, current_floor, destination_floor);
                 elevio_motorDirection(dir);
-                    while (elevio_floorSensor() != destination_floor) { // is moving
-                        if (dir > 0) {
-                            int stop_floor = find_order_over(current_floor, destination_floor);
-                            if (elevio_floorSensor() == stop_floor) { // stops at floor
-                                elevio_motorDirection(DIRN_STOP);
-                                set_state(door_open);
-                                queue[button][stop_floor] = false;
-                            }
+
+                /*
+                int safety_counter = 0;
+                while (elevio_floorSensor() != destination_floor && safety_counter < 1000000) {
+                    safety_counter++;
+                }
+                if (safety_counter >= 1000000) {
+                    printf("ERROR: Infinite loop detected in execute_order!\n");
+                }
+                */
+                while (elevio_floorSensor() != destination_floor) { // is moving
+                    if (dir > 0) {
+                        int stop_floor = find_order_over(current_floor, destination_floor);
+                        if (elevio_floorSensor() == stop_floor) { // stops at floor
+                            elevio_motorDirection(DIRN_STOP);
+                            set_state(door_open);
+                            queue[button][stop_floor] = false;
                         }
-                        if(dir < 0) {
-                            int stop_floor = find_order_under(current_floor, destination_floor);
-                            if (elevio_floorSensor() == stop_floor) { // stops at floor
-                                elevio_motorDirection(DIRN_STOP);
-                                set_state(door_open);
-                                queue[button][stop_floor] = false;
-                            }
+                    }
+                    if(dir < 0) {
+                        int stop_floor = find_order_under(current_floor, destination_floor);
+                        if (elevio_floorSensor() == stop_floor) { // stops at floor
+                            elevio_motorDirection(DIRN_STOP);
+                            set_state(door_open);
+                            queue[button][stop_floor] = false;
                         }
                     }
                 }
             }
+        }
     }    
 }
 
@@ -120,9 +131,18 @@ void clear_queue()
 
 // Find the next stop floor above the current floor, if any.
 int find_order_over(int current_floor, int destination_floor) {
+    if (current_floor < 0 || current_floor >= N_FLOORS || destination_floor < 0 || destination_floor >= N_FLOORS) {
+        return destination_floor; // If at the bottom floor, return 0
+    }
     for (int i = current_floor + 1; i <= destination_floor; i++) {
         if (queue[0][i]) { // Check if there's an "up" order at this floor
             return i; // Stop at the first valid stop floor
+        }
+    }
+    for (int i = current_floor - 1; i >= destination_floor && i >= 0; i--) {
+        printf("Checking queue[1][%d] = %d\n", i, queue[1][i]); // Debugging
+        if (queue[1][i]) { 
+            return i; 
         }
     }
     return destination_floor; // If no intermediate stops, return final destination
@@ -130,9 +150,18 @@ int find_order_over(int current_floor, int destination_floor) {
 
 // Find the next stop floor below the current floor, if any.
 int find_order_under(int current_floor, int destination_floor) {
+    if (current_floor < 0 || current_floor >= N_FLOORS || destination_floor < 0 || destination_floor >= N_FLOORS) {
+        return destination_floor; // If at the bottom floor, return 0
+    }
     for (int i = current_floor - 1; i >= destination_floor; i--) {
         if (queue[1][i]) { // Check if there's a "down" order at this floor
             return i; // Stop at the first valid stop floor
+        }
+    }
+    for (int i = current_floor - 1; i >= destination_floor && i >= 0; i--) {
+        printf("Checking queue[1][%d] = %d\n", i, queue[1][i]); // Debugging
+        if (queue[1][i]) { 
+            return i; 
         }
     }
     return destination_floor; // If no intermediate stops, return final destination

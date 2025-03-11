@@ -14,23 +14,19 @@ DIRN_UP = 1
 
 // Går til en etasje om den ikke er på en
 void state_init() {
-    elevio_motorDirection(DIRN_UP);
     printf("initfunc\n");
-    while (1) {
-        if (elevio_floorSensor() != -1) {
-            elevio_motorDirection(DIRN_STOP);
-            break;
-        }
+    while (elevio_floorSensor() == -1) {
+        elevio_motorDirection(DIRN_UP);
     }
+    elevio_motorDirection(DIRN_STOP);
 }
 
 void state_machine() {
-
-    state_init();
     // For å sette igang heisen.
     while (1)
     {
         // Ting som må sjekkes
+        printf("Elevator State as number: %d\n", current_state);
         update_queue();
         check_stopped();
         switch (get_state()) {
@@ -73,7 +69,7 @@ void set_state(state new_state) {
 }
 
 void check_stopped() {
-    if (elevio_stopButton()) {
+    if (elevio_stopButton() == 1) {
         set_state(stopped);
     }
 }
