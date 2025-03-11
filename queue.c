@@ -2,11 +2,13 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "door.h"
+#include "queue.h"
+#include "state.h"
 
 // Vil lage et array som har lagt inn bestilte etasjer som er sant etter knapptype
 bool queue[N_BUTTONS][N_FLOORS] = {0};
 
-// Må brukes slik at if (en button er pressed) => update
+// Oppdaterer køen om noe trykkes
 void update_queue() {
     // oppdaterer køa
     
@@ -19,6 +21,59 @@ void update_queue() {
             }
         }
     }
+}
+
+// True om noe skal gjøres, false om ikke
+bool find_order() {
+    // Oppdaterer up & down
+    check_cab_floor();
+   
+    // check order
+    for (int button = 0; button < N_BUTTONS-1; button++) {
+        for (int floor = 0; floor < N_FLOORS; floor++) {
+            if (queue[button][floor]) { // hvis noe skal gjøres, gjør det
+                /*
+                int destination_floor = floor;
+                int dir = fix_dir(button, floor, current_floor, destination_floor);
+                elevio_motorDirection(dir);
+                */
+                return true; // Order found
+            }
+        }
+    }
+    return false; // No order found
+}
+
+// Gjennomfører ordre
+void execute_order() {
+    int current_floor = elevio_floorSensor(); // sjekker etasjen man er på
+    for (int button = 0; button < N_BUTTONS-1; button++) {
+        for (int floor = 0; floor < N_FLOORS; floor++) {
+            if (queue[button][floor]) { // hvis noe skal gjøres, gjør det
+                int destination_floor = floor;
+                int dir = fix_dir(button, floor, current_floor, destination_floor);
+                elevio_motorDirection(dir);
+                    while (elevio_floorSensor() != destination_floor) { // is moving
+                        if (dir > 0) {
+                            int stop_floor = find_order_over(current_floor, destination_floor);
+                            if (elevio_floorSensor() == stop_floor) { // stops at floor
+                                elevio_motorDirection(DIRN_STOP);
+                                set_state(door_open);
+                                queue[button][stop_floor] = false;
+                            }
+                        }
+                        if(dir < 0) {
+                            int stop_floor = find_order_under(current_floor, destination_floor);
+                            if (elevio_floorSensor() == stop_floor) { // stops at floor
+                                elevio_motorDirection(DIRN_STOP);
+                                set_state(door_open);
+                                queue[button][stop_floor] = false;
+                            }
+                        }
+                    }
+                }
+            }
+    }    
 }
 
 // Henter verdier fra cabraden
@@ -39,56 +94,9 @@ void check_cab_floor() {
     }
 }
 
-
-// Skal skje: kun false => ingenting skjer
-// Fjerner elementet i køen som er utført
-int find_order() {
-    // Oppdaterer up & down
-    check_cab_floor();
-   
-    // do order
-    int current_floor = elevio_floorSensor(); // sjekker etasjen man er på
-    for (int button = 0; button < N_BUTTONS-1; button++) {
-        for (int floor = 0; floor < N_FLOORS; floor++) {
-            if (queue[button][floor]) { // hvis noe skal gjøres, gjør det
-                destination_floor = floor;
-                dir = fix_dir(button, floor, current_floor, destination_floor);
-                elevio_motorDirection(dir);
-                return 
-            }
-        }
-    }
-}
-
-void execute_order() {
-    while (elevio_floorSensor() != destination_floor) { // is moving
-        if (dir > 0) {
-            int stop_floor = find_order_over(current_floor, destination_floor);
-            if (elevio_floorSensor() == stop_floor) { // stops at floor
-                elevio_motorDirection(DIRN_STOP);
-                open_door();
-                wait_for_close();
-                close_door();
-                queue[button][stop_floor] = false;
-            }
-        }
-        if(dir < 0) {
-            int stop_floor = find_order_under(current_floor, destination_floor);
-            if (elevio_floorSensor() == stop_floor) { // stops at floor
-                elevio_motorDirection(DIRN_STOP);
-                open_door();
-                wait_for_close();
-                close_door();
-                queue[button][stop_floor] = false;
-            }
-        }
-    }
-}
-
 // Setter funksjonell verdi på dir
 int fix_dir(int button, int floor, int current_floor, int destination_floor) {
-    dir = destination_floor - current_floor;
-
+    int dir = destination_floor - current_floor;
     if (dir < 0) { // Setter dir til en funksjonell verdi
         dir = -1;
     }

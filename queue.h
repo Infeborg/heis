@@ -2,22 +2,20 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-typedef struct {
-    int button;
-    int floor;
-    int destination_floor;
-    int dir;
-
-
-} floor_vals;
-
+// Oppdaterer køen om noe trykkes
 void update_queue(void);
 
-int fix_dir(int button, int floor, int current_floor, int destination_floor);
-// Fjerner elementet i køen som er utført
-int find_order(void);
+// True om noe skal gjøres, false om ikke
+bool find_order(void);
 
+// Gjennomfører ordre
+void execute_order(void); 
+
+// Sjekker hvilken cabplasser som skal brukes
 void check_cab_floor(void);
+
+// Setter funksjonell verdi på dir
+int fix_dir(int button, int floor, int current_floor, int destination_floor);
 
 // Når stoppknappen er trykket skal køen tømmes.
 void clear_queue(void); 

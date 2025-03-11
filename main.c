@@ -7,8 +7,14 @@
 
 int main() {
     
+    printf("i gang\n");
+
     elevio_init();
     state_init();
+
+    printf("=== Heis! ===\n");
+    printf("Trykk stop for å stoppe!\n");
+
     state_machine();
     /*
 
