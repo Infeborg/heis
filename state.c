@@ -21,10 +21,15 @@ void* queue_updater(void* arg) {
 // Går til en etasje om den ikke er på en
 void state_init() {
     printf("initfunc\n");
+<<<<<<< HEAD
     close_door();
     while (elevio_floorSensor() == -1) {
         elevio_motorDirection(DIRN_DOWN);
         clear_queue();
+=======
+    while (elevio_floorSensor() == -1) {
+        elevio_motorDirection(DIRN_UP);
+>>>>>>> bbb985bda0373464071a8d6126ddcb019eb2ee5c
     }
     elevio_motorDirection(DIRN_STOP);
 }
@@ -34,6 +39,7 @@ void state_machine() {
     while (1)
     {
         // Ting som må sjekkes
+        printf("Elevator State as number: %d\n", current_state);
         update_queue();
         check_stopped();
         floor_light_on();
@@ -85,8 +91,11 @@ void set_state(state new_state) {
 
 void check_stopped() {
     if (elevio_stopButton() == 1) {
+<<<<<<< HEAD
         elevio_motorDirection(DIRN_STOP);
         elevio_stopLamp(1);
+=======
+>>>>>>> bbb985bda0373464071a8d6126ddcb019eb2ee5c
         set_state(stopped);
     }
     else {
