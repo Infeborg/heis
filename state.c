@@ -6,7 +6,7 @@
 
 state current_state = idle;
 
-
+/*
 void* queue_updater(void* arg) {
     while (1) {
         update_queue();
@@ -16,6 +16,7 @@ void* queue_updater(void* arg) {
     }
     return NULL;
 }
+    */
 
 
 // Går til en etasje om den ikke er på en
@@ -42,7 +43,6 @@ void state_machine() {
         switch (get_state()) {
         case idle: // Venter på noe å gjøre
             printf("idle\n");
-            set_state(moving);
             if (find_order()) {
                 set_state(moving);
             }
@@ -50,6 +50,7 @@ void state_machine() {
         case moving: // Gjennomfører ordre
             printf("moving\n");      
             execute_order();
+            set_state(idle);
         // Her har den motatt en bestilling, og beveger seg deretter. Man kan se hvilken vei heisen beveger seg, etter
         // hvilke fortegn det er på differansen mellom den definerte tilstanden og bestillingen.
             break;
