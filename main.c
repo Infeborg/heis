@@ -8,17 +8,18 @@
 #include <pthread.h>
 
 int main() {
-
     
-
     
     printf("i gang\n");
 
     elevio_init();
     state_init();
 
-    //pthread_t updater_thread;
-    //pthread_create(&updater_thread, NULL, queue_updater, NULL);
+    
+    pthread_t updater_thread;
+    pthread_create(&updater_thread, NULL, queue_updater, NULL);
+    
+    clear_queue();
 
     printf("=== Heis! ===\n");
     printf("Trykk stop for å stoppe!\n");

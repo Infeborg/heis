@@ -11,6 +11,8 @@ bool find_order(void);
 // Gjennomfører ordre
 void execute_order(void); 
 
+int find_closest_order(int current_floor);
+
 // Sjekker hvilken cabplasser som skal brukes
 // void check_cab_floor(void);
 
