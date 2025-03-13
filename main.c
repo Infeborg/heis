@@ -4,17 +4,26 @@
 #include <time.h>
 #include "driver/elevio.h"
 #include "state.h"
+#include "queue.h"
+#include <pthread.h>
 
 int main() {
+
+    pthread_t updater_thread;
+    pthread_create(&updater_thread, NULL, queue_updater, NULL);
+
     
     printf("i gang\n");
 
-    // elevio_init();
+    elevio_init();
     state_init();
+
+
 
     printf("=== Heis! ===\n");
     printf("Trykk stop for å stoppe!\n");
 
+    //elevio_motorDirection(DIRN_UP);
     state_machine();
     /*
 

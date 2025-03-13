@@ -12,7 +12,7 @@ bool find_order(void);
 void execute_order(void); 
 
 // Sjekker hvilken cabplasser som skal brukes
-void check_cab_floor(void);
+// void check_cab_floor(void);
 
 // Setter funksjonell verdi på dir
 int fix_dir(int button, int floor, int current_floor, int destination_floor);
@@ -28,3 +28,5 @@ int find_order_over(int current_floor, int destination_floor);
 // Iterer gjennom køen. Dersom heisen beveger seg nedover.
 // Skal den lete gjennom køen om det er noen elementer i køen som er under + skal nedover.
 int find_order_under(int current_floor, int destination_floor);
+
+void floor_light_on(void);

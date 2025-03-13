@@ -1,41 +1,47 @@
 #include "state.h"
 #include "queue.h"
+#include "door.h"
 #include "driver/elevio.h"
+#include <stdio.h>
 
 state current_state = idle;
 
-// Kanskje bedre om alt dette er i main, og heller implementere koden som funksjoner, så skriver funksjonene under:
 
-/*
-DIRN_DOWN = -1,
-DIRN_STOP = 0,
-DIRN_UP = 1
-*/
+void* queue_updater(void* arg) {
+    while (1) {
+        update_queue();
+        check_stopped();
+        printf("thread\n");
+        usleep(100000);
+    }
+    return NULL;
+}
+
 
 // Går til en etasje om den ikke er på en
 void state_init() {
-    elevio_motorDirection(DIRN_UP);
     printf("initfunc\n");
-    while (1) {
-        if (elevio_floorSensor() != -1) {
-            elevio_motorDirection(DIRN_STOP);
-            break;
-        }
+    close_door();
+    while (elevio_floorSensor() == -1) {
+        elevio_motorDirection(DIRN_DOWN);
+        clear_queue();
     }
+    elevio_motorDirection(DIRN_STOP);
 }
 
 void state_machine() {
-
-    state_init();
     // For å sette igang heisen.
     while (1)
     {
         // Ting som må sjekkes
         update_queue();
         check_stopped();
+        floor_light_on();
+
         switch (get_state()) {
         case idle: // Venter på noe å gjøre
-            printf("idle\n");    
+            printf("idle\n");
+            set_state(moving);
             if (find_order()) {
                 set_state(moving);
             }
@@ -49,9 +55,12 @@ void state_machine() {
         case stopped: // Noen har trykket på stoppknappen-> Køen tømmes
             printf("stopped\n");  
             clear_queue();
-            elevio_motorDirection(DIRN_STOP);
-            set_state(idle);
+            // elevio_motorDirection(DIRN_STOP);
+        
+            // set_state(idle);
             break;
+
+
         case door_open:
             printf("door open!!!\n");  
             open_door();
@@ -64,6 +73,7 @@ void state_machine() {
     }
 }
 
+
 state get_state() {
     return current_state;
 }
@@ -72,8 +82,20 @@ void set_state(state new_state) {
     current_state = new_state;
 }
 
+
 void check_stopped() {
-    if (elevio_stopButton()) {
+    if (elevio_stopButton() == 1) {
+        elevio_motorDirection(DIRN_STOP);
+        elevio_stopLamp(1);
         set_state(stopped);
+    }
+    else {
+        elevio_stopLamp(0);
+    }
+    if (!find_order()) {
+        state_init();
+
+        set_state(idle);
+        
     }
 }

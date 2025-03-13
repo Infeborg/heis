@@ -8,6 +8,7 @@ typedef enum state
     door_open
 } state;
 
+void* queue_updater(void* arg);
 void state_init(void);
 void state_machine(void);
 state get_state(void);

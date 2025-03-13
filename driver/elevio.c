@@ -20,7 +20,7 @@ void elevio_init(void)
     char port[8] = "15657";
     con_load("elevio.con",
              con_val("com_ip", ip, "%s")
-                 con_val("com_port", port, "%s"))
+             con_val("com_port", port, "%s"))
 
         pthread_mutex_init(&sockmtx, NULL);
 

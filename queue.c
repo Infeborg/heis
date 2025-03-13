@@ -10,14 +10,12 @@ bool queue[N_BUTTONS][N_FLOORS] = {0};
 
 // Oppdaterer køen om noe trykkes
 void update_queue() {
-    // oppdaterer køa
-    
-    for (int floor = 0; floor < N_FLOORS; floor++)
-    {
-        for (int button = 0; button < N_BUTTONS; button++)
-        {
-            if (elevio_callButton(floor, button)) {
-                queue[button][floor] = elevio_callButton(floor, button);
+    for (int floor = 0; floor < N_FLOORS; floor++) {
+        for (int button = 0; button < N_BUTTONS; button++) {
+            bool button_pressed = elevio_callButton(floor, button);
+            if (button_pressed) {
+                queue[button][floor] = true;
+                elevio_buttonLamp(floor, button, 1);
             }
         }
     }
@@ -25,73 +23,63 @@ void update_queue() {
 
 // True om noe skal gjøres, false om ikke
 bool find_order() {
-    // Oppdaterer up & down
-    check_cab_floor();
    
     // check order
-    for (int button = 0; button < N_BUTTONS-1; button++) {
-        for (int floor = 0; floor < N_FLOORS; floor++) {
+    for (int button = 0; button < N_BUTTONS; button++) { // N_BUTTONS -1 
+        for (int floor = N_FLOORS - 1; floor >= 0 ; floor--) {
             if (queue[button][floor]) { // hvis noe skal gjøres, gjør det
-                /*
-                int destination_floor = floor;
-                int dir = fix_dir(button, floor, current_floor, destination_floor);
-                elevio_motorDirection(dir);
-                */
+                printf("Order found at button %d, floor %d\n", button, floor); // DEBUG
                 return true; // Order found
             }
         }
     }
+    printf("No orders in queue\n"); // DEBUG
     return false; // No order found
 }
 
 // Gjennomfører ordre
 void execute_order() {
+    
     int current_floor = elevio_floorSensor(); // sjekker etasjen man er på
-    for (int button = 0; button < N_BUTTONS-1; button++) {
-        for (int floor = 0; floor < N_FLOORS; floor++) {
+    for (int button = 0; button < N_BUTTONS; button++) { 
+        for (int floor = N_FLOORS - 1; floor >= 0 ; floor--) {
             if (queue[button][floor]) { // hvis noe skal gjøres, gjør det
                 int destination_floor = floor;
                 int dir = fix_dir(button, floor, current_floor, destination_floor);
                 elevio_motorDirection(dir);
-                    while (elevio_floorSensor() != destination_floor) { // is moving
-                        if (dir > 0) {
-                            int stop_floor = find_order_over(current_floor, destination_floor);
-                            if (elevio_floorSensor() == stop_floor) { // stops at floor
-                                elevio_motorDirection(DIRN_STOP);
-                                set_state(door_open);
-                                queue[button][stop_floor] = false;
-                            }
+                // printf("%d", destination_floor);
+                
+                while (elevio_floorSensor() != destination_floor) { // is moving
+                    if (dir > 0) {
+                        int stop_floor = find_order_over(current_floor, destination_floor);
+                        if (elevio_floorSensor() == stop_floor) { // stops at floor
+                            elevio_motorDirection(DIRN_STOP);
+                            //set_state(door_open);
+                            queue[button][stop_floor] = false;
+                            elevio_buttonLamp(stop_floor, button, 0);
+                            //set_state(door_open);
+                            open_door();
+                            wait_for_close();
+                            close_door();
                         }
-                        if(dir < 0) {
-                            int stop_floor = find_order_under(current_floor, destination_floor);
-                            if (elevio_floorSensor() == stop_floor) { // stops at floor
-                                elevio_motorDirection(DIRN_STOP);
-                                set_state(door_open);
-                                queue[button][stop_floor] = false;
-                            }
+                    }
+                    if(dir < 0) {
+                        int stop_floor = find_order_under(current_floor, destination_floor);
+                        if (elevio_floorSensor() == stop_floor) { // stops at floor
+                            elevio_motorDirection(DIRN_STOP);
+                            //set_state(door_open);
+                            queue[button][stop_floor] = false;
+                            elevio_buttonLamp(stop_floor, button, 0);
+                            open_door();
+                            wait_for_close();
+                            close_door();
+                            //set_state(door_open);
                         }
                     }
                 }
             }
-    }    
-}
-
-// Henter verdier fra cabraden
-void check_cab_floor() {
-    for (int floor = 0; floor < N_FLOORS; floor++) {
-        if (queue[2][floor]) {
-            int current_floor = elevio_floorSensor();
-            int dir = current_floor - floor;
-            if (dir < 0) {
-                queue[0][floor] = true;
-                queue[2][floor] = false;
-            }
-            else {
-                queue[1][floor] = true;
-                queue[2][floor] = false;
-            }
         }
-    }
+    }    
 }
 
 // Setter funksjonell verdi på dir
@@ -114,26 +102,36 @@ void clear_queue()
         for (int button = 0; button < N_BUTTONS; button++)
         {
             queue[button][floor] = 0;
+            elevio_buttonLamp(floor, button, 0);
         }
     }
 }
 
-// Find the next stop floor above the current floor, if any.
 int find_order_over(int current_floor, int destination_floor) {
     for (int i = current_floor + 1; i <= destination_floor; i++) {
-        if (queue[0][i]) { // Check if there's an "up" order at this floor
-            return i; // Stop at the first valid stop floor
+        for (int button = 0; button < N_BUTTONS; button++) {
+            if (queue[button][i]) {
+                return i;
+            }
         }
     }
-    return destination_floor; // If no intermediate stops, return final destination
+    return destination_floor;
 }
 
-// Find the next stop floor below the current floor, if any.
 int find_order_under(int current_floor, int destination_floor) {
     for (int i = current_floor - 1; i >= destination_floor; i--) {
-        if (queue[1][i]) { // Check if there's a "down" order at this floor
-            return i; // Stop at the first valid stop floor
+        for (int button = 0; button < N_BUTTONS; button++) {
+            if (queue[button][i]) {
+                return i;
+            }
         }
     }
-    return destination_floor; // If no intermediate stops, return final destination
+    return destination_floor;
+}
+
+
+void floor_light_on() {
+    if(elevio_floorSensor() != -1) {
+        elevio_floorIndicator(elevio_floorSensor());
+    }
 }

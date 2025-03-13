@@ -1,11 +1,12 @@
 #include "door.h"
 
 void wait_for_close() {
-    sleep(3);
+    usleep(3000000);
 
     while (elevio_obstruction()) {
-        sleep(3);
+        usleep(3000000);
     }
+    printf("LUKKER DORA!\n");
 }
 
 // Skrur på lys
