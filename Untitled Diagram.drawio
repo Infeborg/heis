@@ -34,7 +34,7 @@
             <mxPoint x="430" y="230" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="JN9Y_74NhxLsXtNof_nw-13" value="Order foud" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+        <mxCell id="JN9Y_74NhxLsXtNof_nw-13" value="Order foun&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;d&lt;/span&gt;" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
           <mxGeometry x="230" y="240" width="80" height="30" as="geometry" />
         </mxCell>
         <mxCell id="JN9Y_74NhxLsXtNof_nw-16" value="" style="endArrow=none;html=1;rounded=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
@@ -97,7 +97,7 @@
             <mxPoint x="400" y="330" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="JN9Y_74NhxLsXtNof_nw-41" value="Emergency stop pressed" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fillColor=#FFFFFF;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+        <mxCell id="JN9Y_74NhxLsXtNof_nw-41" value="Stop button pressed" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fillColor=#FFFFFF;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
           <mxGeometry x="370" y="280" width="60" height="30" as="geometry" />
         </mxCell>
         <mxCell id="JN9Y_74NhxLsXtNof_nw-42" value="" style="endArrow=none;html=1;rounded=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
@@ -106,8 +106,8 @@
             <mxPoint x="540" y="70" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="JN9Y_74NhxLsXtNof_nw-47" value="Emergency button&lt;div&gt;released&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="JN9Y_74NhxLsXtNof_nw-42">
-          <mxGeometry x="0.1294" relative="1" as="geometry">
+        <mxCell id="JN9Y_74NhxLsXtNof_nw-49" value="Stop button&lt;div&gt;released&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="JN9Y_74NhxLsXtNof_nw-42">
+          <mxGeometry x="-0.1412" y="-4" relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
